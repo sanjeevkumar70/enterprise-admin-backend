@@ -6,7 +6,11 @@ exports.register = async (req, res) => {
   const { name, email, password, role } = req.body;
   const hash = await bcrypt.hash(password, 10);
   const user = await User.create({ name, email, password: hash, role });
-  return res.json({ success: true, data: user});
+  return res.json(
+    {
+      success: true,
+      message: `${user.role} registered successfully!`
+    });
 };
 
 exports.login = async (req, res) => {
@@ -15,5 +19,10 @@ exports.login = async (req, res) => {
   if (!user || !(await bcrypt.compare(password, user?.password)))
     return res.status(401).json({ message: "Invalid credentials" });
 
-  res.json({ success: true, data:{ user,token: generateToken(user._id, user.role) }});
+  res.json(
+    {
+      success: true,
+      data: user,
+      token: generateToken(user._id, user.role)
+    });
 };
