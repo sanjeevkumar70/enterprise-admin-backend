@@ -13,6 +13,14 @@ exports.register = async (req, res) => {
     });
 };
 
+//payload
+// {
+//    "name": "",
+//    "email": "",
+//    "email": "",
+//    "role": ""
+// }
+
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
@@ -26,3 +34,9 @@ exports.login = async (req, res) => {
       token: generateToken(user._id, user.role)
     });
 };
+
+// payload
+// {
+//    "email": "",
+//    "password": ""
+// }
