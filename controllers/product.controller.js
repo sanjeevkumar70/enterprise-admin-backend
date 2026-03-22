@@ -67,32 +67,20 @@ exports.getProduct = async (req, res) => {
     });
 };
 
-
 exports.updateProduct = async (req, res) => {
     try {
-        const { _id } = req.params;
-
-        const product = await Product.findOne({ _id });
-
+        const { id } = req.params; // get id from params
+        const product = await Product.findById(id);
+        
         if (!product) {
             return res.status(404).json({
                 success: false,
                 message: "Product not found"
             });
         }
-
-        // Duplicate code check (optional)
-        if (req.body._id && req.body._id !== product._id) {
-            const exists = await Product.findOne({ _id: req.body._id });
-            if (exists) {
-                return res.status(409).json({
-                    success: false,
-                    message: "Product code already exists"
-                });
-            }
-        }
-
+        // Update fields
         Object.assign(product, req.body);
+
         await product.save();
 
         return res.status(200).json({
