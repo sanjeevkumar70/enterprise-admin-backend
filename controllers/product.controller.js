@@ -1,6 +1,5 @@
 const Product = require("../models/Product");
 
-
 exports.createProduct = async (req, res) => {
     try {
         const {
@@ -60,23 +59,53 @@ exports.createProduct = async (req, res) => {
 };
 
 
-// {
-//   "p_code": "PRD-1001",
-//   "p_name": "Smart Watch",
-//   "p_price": 2999,
-//   "p_description": "Fitness smart watch with heart rate tracking",
-//   "rating": 4.5,
-//   "dimension": "42mm x 38mm x 10mm",
-//   "color": "Black",
-//   "quantity": 50,
-//   "p_image": "https://example.com/watch.png"
-// }
-
-
 exports.getProduct = async (req, res) => {
     const data = await Product.find();
     res.json({
         data: data,
         message: "product list fetched successfully!",
     });
+};
+
+
+exports.updateProduct = async (req, res) => {
+    try {
+        const { _id } = req.params;
+
+        const product = await Product.findOne({ _id });
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        // Duplicate code check (optional)
+        if (req.body._id && req.body._id !== product._id) {
+            const exists = await Product.findOne({ _id: req.body._id });
+            if (exists) {
+                return res.status(409).json({
+                    success: false,
+                    message: "Product code already exists"
+                });
+            }
+        }
+
+        Object.assign(product, req.body);
+        await product.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Product updated successfully",
+            data: product
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error updating product",
+            error: error.message
+        });
+    }
 };
