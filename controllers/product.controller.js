@@ -71,7 +71,7 @@ exports.updateProduct = async (req, res) => {
     try {
         const { id } = req.params; // get id from params
         const product = await Product.findById(id);
-        
+
         if (!product) {
             return res.status(404).json({
                 success: false,
@@ -93,6 +93,34 @@ exports.updateProduct = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Error updating product",
+            error: error.message
+        });
+    }
+};
+
+exports.deleteProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedProduct = await Product.findByIdAndDelete(id);
+
+        if (!deletedProduct) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Product deleted successfully",
+            data: deletedProduct
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error deleting product",
             error: error.message
         });
     }
