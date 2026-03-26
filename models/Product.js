@@ -43,6 +43,10 @@ const productSchema = new mongoose.Schema(
     wishlist: {
       type: Boolean,
       default: false
+    },
+    add_to_cart: {
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }

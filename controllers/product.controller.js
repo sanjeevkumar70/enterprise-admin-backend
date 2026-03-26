@@ -185,3 +185,62 @@ exports.getWishlistProducts = async (req, res) => {
     });
   }
 };
+
+exports.toggleAddtocartlist = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // ✅ correct way
+    const product = await Product.findById(id);
+
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    // 🔥 Toggle wishlist (default false → true → false)
+    product.add_to_cart = !product.add_to_cart;
+
+    await product.save();
+
+    return res.status(200).json({
+      success: true,
+      message: product.add_to_cart
+        ? "Added to cart"
+        : "Removed from cart",
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Error updating cart",
+      error: error.message,
+    });
+  }
+};
+
+exports.getAddtocartProducts = async (req, res) => {
+  try {
+    const products = await Product.find({ add_to_cart: true });
+
+    return res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching cart products",
+      error: error.message,
+    });
+  }
+};
