@@ -41,7 +41,8 @@ exports.createProduct = async (req, res) => {
             dimension,
             color,
             quantity,
-            p_image
+            p_image,
+            wishlist:false
         });
 
         return res.status(201).json({
@@ -159,6 +160,27 @@ exports.toggleWishlist = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Error updating wishlist",
+      error: error.message,
+    });
+  }
+};
+
+exports.getWishlistProducts = async (req, res) => {
+  try {
+    const products = await Product.find({ wishlist: true });
+
+    return res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching wishlist products",
       error: error.message,
     });
   }
