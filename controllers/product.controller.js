@@ -151,7 +151,6 @@ exports.toggleWishlist = async (req, res) => {
       message: product.wishlist
         ? "Added to wishlist"
         : "Removed from wishlist",
-      data: product,
     });
 
   } catch (error) {
