@@ -58,7 +58,6 @@ exports.createProduct = async (req, res) => {
     }
 };
 
-
 exports.getProduct = async (req, res) => {
     const data = await Product.find();
     res.json({
@@ -124,4 +123,44 @@ exports.deleteProduct = async (req, res) => {
             error: error.message
         });
     }
+};
+
+exports.toggleWishlist = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // ✅ correct way
+    const product = await Product.findById(id);
+
+    console.log(id, product, "wishlist check");
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    // 🔥 Toggle wishlist (default false → true → false)
+    product.wishlist = !product.wishlist;
+
+    await product.save();
+
+    return res.status(200).json({
+      success: true,
+      message: product.wishlist
+        ? "Added to wishlist"
+        : "Removed from wishlist",
+      data: product,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Error updating wishlist",
+      error: error.message,
+    });
+  }
 };

@@ -39,6 +39,10 @@ const productSchema = new mongoose.Schema(
     },
     p_image: {
       type: String
+    },
+    wishlist: {
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }
