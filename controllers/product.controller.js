@@ -64,13 +64,13 @@ exports.getProduct = async (req, res) => {
         // Accepts ?current_page=1 or ?page=1 (defaults to 1)
         const page = parseInt(req.query.current_page || req.query.page) || 1;
         
-        // Accepts ?limit=10, ?count_per_page=10, or ?per_page=10 (defaults to 5)
-        const limit = parseInt(req.query.limit || req.query.count_per_page || req.query.per_page) || 5; 
+        // Prioritizes per_page from frontend, then count_per_page, defaults to 5
+        const per_page = parseInt(req.query.per_page || req.query.count_per_page) || 5; 
         
-        const skip = (page - 1) * limit;
+        const skip = (page - 1) * per_page;
 
         const [data, totalProducts] = await Promise.all([
-            Product.find().skip(skip).limit(limit),
+            Product.find().skip(skip).limit(per_page),
             Product.countDocuments()
         ]);
 
@@ -78,7 +78,7 @@ exports.getProduct = async (req, res) => {
             success: true,
             totalProducts: totalProducts,
             currentPage: page,
-            count: limit, // Returns the count per page (limit requested)
+            count: per_page, // Returns the per_page count
             data: data,
             message: "Product list fetched successfully!"
         });
