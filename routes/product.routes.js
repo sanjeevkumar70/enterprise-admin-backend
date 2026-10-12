@@ -12,3 +12,4 @@ router.patch("/cart/:id", auth(["user", "admin", "manager"]), toggleAddtocartlis
 router.get("/cart", auth(["user", "admin", "manager"]), getAddtocartProducts)
 
 module.exports = router;
+  

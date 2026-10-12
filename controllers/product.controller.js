@@ -60,11 +60,35 @@ exports.createProduct = async (req, res) => {
 };
 
 exports.getProduct = async (req, res) => {
-    const data = await Product.find();
-    res.json({
-        data: data,
-        message: "product list fetched successfully!",
-    });
+    try {
+        // Accepts ?current_page=1 or ?page=1 (defaults to 1)
+        const page = parseInt(req.query.current_page || req.query.page) || 1;
+        
+        // Accepts ?limit=10, ?count_per_page=10, or ?per_page=10 (defaults to 5)
+        const limit = parseInt(req.query.limit || req.query.count_per_page || req.query.per_page) || 5; 
+        
+        const skip = (page - 1) * limit;
+
+        const [data, totalProducts] = await Promise.all([
+            Product.find().skip(skip).limit(limit),
+            Product.countDocuments()
+        ]);
+
+        return res.status(200).json({
+            success: true,
+            totalProducts: totalProducts,
+            currentPage: page,
+            count: limit, // Returns the count per page (limit requested)
+            data: data,
+            message: "Product list fetched successfully!"
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Error fetching products",
+            error: error.message
+        });
+    }
 };
 
 exports.updateProduct = async (req, res) => {
